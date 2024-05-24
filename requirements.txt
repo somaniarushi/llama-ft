@@ -1,2 +1,3 @@
 torch==2.1.0
 tiktoken==0.5.1
+fairscale==0.4.13
