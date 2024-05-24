@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
+
 def split_parquet_into_train_and_test(
     input_parquet: str,
     output_train_parquet: str,
@@ -15,6 +16,7 @@ def split_parquet_into_train_and_test(
     train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
     train_df.to_parquet(output_train_parquet)
     test_df.to_parquet(output_test_parquet)
+
 
 if __name__ == "__main__":
     split_parquet_into_train_and_test(
