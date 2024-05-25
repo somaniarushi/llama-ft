@@ -1,4 +1,4 @@
-from loader.load import IntelOrcaTokensDataLoader, IntelOrcaTokens
+from loader.load import IntelOrcaTokensDataLoader
 from llama.llama.tokenizer import Tokenizer
 
 TOKENIZER_PATH = "data/llama3_8b/tokenizer.model"
@@ -31,26 +31,12 @@ class TestIntelOrcaDataLoader:
         tokenizer = Tokenizer(TOKENIZER_PATH)
         loader = IntelOrcaTokensDataLoader(tokenizer=tokenizer, parquet_path=DATA_PATH)
         data = loader[0]
-        tokens: IntelOrcaTokens = loader.row_to_tokens(data)
+        tokens = loader.row_to_tokens(data)
         assert tokens is not None, "Tokens are None for index 0"
-        assert len(tokens.tokens) == len(
-            tokens.loss_mask
-        ), "Tokens and loss mask are not the same length"
 
         # Assert that the first token is bos, and the last token is eos
-        assert tokens.tokens[0] == tokenizer.bos_id, "First token is not bos"
-        assert tokens.tokens[-1] == tokenizer.eos_id, "Last token is not eos"
-
-        # get number of tokens occupied by question
-        num_question_tokens = len(
-            tokenizer.encode(data["question"], bos=True, eos=False)
-        )
-        assert (
-            tokens.loss_mask[:num_question_tokens].sum() == 0
-        ), "Loss mask is not zero for question tokens"
-        assert all(
-            tokens.loss_mask[num_question_tokens:]
-        ), "Loss mask is not one for chosen and rejected tokens"
+        assert tokens[0] == tokenizer.bos_id, "First token is not bos"
+        assert tokens[-1] == tokenizer.eos_id, "Last token is not eos"
 
         # When detokenized, the tokens should be equal to the original question + chosen
         detokenized = tokenizer.decode(tokens.tokens.tolist()[1:-1])  # drop bos and eos
